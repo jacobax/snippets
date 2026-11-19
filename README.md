@@ -27,10 +27,10 @@ _注2：代码验证基于 Pro 计划 snippet，worker free。_
 6. **turn：** `turn://host:port`，默认端口 3478。**worker.js / snippet.js。**
 7. **turns：** turn over tls，默认端口 5349；完全体支持 `turns://domain:port`、`turns://ip:port` 与 `!ip` 后缀，非完全体仅 `turns://domain:port`。**worker.js 为完全体，snippet.js 为非完全体。**
 8. **global：** 协议代理（socks5 等）默认“先试直连、失败再走代理”的回落模式，`?global=1` 改为**跳过直连、全局直接走路径代理**：优先于 `auto` 与 AI/SNI 判定，`p` 为空时回落 `zj`。路径内嵌 query（`/fdip={proxy}?global=1`）与 header `global: 1` 同样识别，兼容 sing-box 把 path 里的 `?` 转义成 `%3F`。**worker.js / snippet.js / https.js。**
-9. **auto：** ZJ 自适应 cf 官方 proxyip 服务，`zj` 按 colo 生成：AI 域名回落 `p`（`p` 为空则 `zj`），其它回落 `zj`；`auto=0` 关闭 `zj`，强制走 `p`（`p` 为空则 `zj`）。**四个文件均支持。**
+9. **auto：** ZJ 自适应 cf 官方 proxyip 服务，`zj` 按 colo 生成：colo 为 `HKG` 时 AI 域名回落 `p`（`p` 为空则 `zj`），其它（含非 HKG 的 AI）回落 `zj`；`auto=0` 关闭 `zj`，强制走 `p`（`p` 为空则 `zj`）。**四个文件均支持。**
 
 **说明：** `p` = 路径指定的代理，`zj` = 按 colo 生成的 ZJ 官方 proxyip；AI 域名 = 代码里的 `AI` 常量，目标以 IP 形式送入时用 TLS SNI 判定。  
-**注：** `auto=1` / `auto=2` 不再特殊处理，与不设 auto 等价；目标为 IP 时最多等首块数据 200 ms 做 SNI 判定，超时按 `zj`；`global=1` 时不做 SNI 判定、也不等首块数据（直接走 `p`）。  
+**注：** `auto=1` / `auto=2` 不再特殊处理，与不设 auto 等价；目标为 IP 时最多等首块数据 200 ms 做 SNI 判定，超时按 `zj`；`global=1` 时不做 SNI 判定、也不等首块数据（直接走 `p`）；AI 域名任意 colo 跳过直连直接回落，直连失败的主机记忆 60 s（上限 200 条，随 isolate 重置），期间同样跳过直连。  
 **注：** TXT 内容以 `,` 分隔、换行或两者混用；这些功能解决的是 CF 节点的落地问题。
 
 ---
